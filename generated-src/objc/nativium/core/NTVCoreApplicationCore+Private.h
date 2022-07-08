@@ -6,7 +6,7 @@
 
 static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for this file");
 
-@class NTVCoreApplicationCore;
+@protocol NTVCoreApplicationCore;
 
 namespace djinni_generated {
 
@@ -15,7 +15,7 @@ class ApplicationCore
 public:
     using CppType = std::shared_ptr<::ApplicationCore>;
     using CppOptType = std::shared_ptr<::ApplicationCore>;
-    using ObjcType = ::NTVCoreApplicationCore*;
+    using ObjcType = id<NTVCoreApplicationCore>;
 
     using Boxed = ApplicationCore;
 

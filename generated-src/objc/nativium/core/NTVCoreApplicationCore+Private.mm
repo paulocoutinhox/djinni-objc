@@ -6,19 +6,20 @@
 #import "djinni/objc/DJICppWrapperCache+Private.h"
 #import "djinni/objc/DJIError.h"
 #import "djinni/objc/DJIMarshal+Private.h"
+#import "djinni/objc/DJIObjcWrapperCache+Private.h"
 #include <exception>
 #include <stdexcept>
 #include <utility>
 
 static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for this file");
 
-@interface NTVCoreApplicationCore ()
+@interface NTVCoreApplicationCoreCppProxy : NSObject<NTVCoreApplicationCore>
 
 - (id)initWithCpp:(const std::shared_ptr<::ApplicationCore>&)cppRef;
 
 @end
 
-@implementation NTVCoreApplicationCore {
+@implementation NTVCoreApplicationCoreCppProxy {
     ::djinni::CppProxyCache::Handle<std::shared_ptr<::ApplicationCore>> _cppRefHandle;
 }
 
@@ -30,9 +31,9 @@ static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for th
     return self;
 }
 
-+ (nullable NTVCoreApplicationCore *)shared {
+- (nullable id<NTVCoreApplicationCore>)shared {
     try {
-        auto objcpp_result_ = ::ApplicationCore::shared();
+        auto objcpp_result_ = _cppRefHandle.get()->shared();
         return ::djinni_generated::ApplicationCore::fromCpp(objcpp_result_);
     } DJINNI_TRANSLATE_EXCEPTIONS()
 }
@@ -55,12 +56,50 @@ static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for th
 
 namespace djinni_generated {
 
+class ApplicationCore::ObjcProxy final
+: public ::ApplicationCore
+, private ::djinni::ObjcProxyBase<ObjcType>
+{
+    friend class ::djinni_generated::ApplicationCore;
+public:
+    using ObjcProxyBase::ObjcProxyBase;
+    std::shared_ptr<::ApplicationCore> shared() override
+    {
+        @autoreleasepool {
+            auto objcpp_result_ = [djinni_private_get_proxied_objc_object() shared];
+            return ::djinni_generated::ApplicationCore::toCpp(objcpp_result_);
+        }
+    }
+    double multiply(double c_value1, double c_value2) override
+    {
+        @autoreleasepool {
+            auto objcpp_result_ = [djinni_private_get_proxied_objc_object() multiply:(::djinni::F64::fromCpp(c_value1))
+                                                                              value2:(::djinni::F64::fromCpp(c_value2))];
+            return ::djinni::F64::toCpp(objcpp_result_);
+        }
+    }
+    std::string get_version() override
+    {
+        @autoreleasepool {
+            auto objcpp_result_ = [djinni_private_get_proxied_objc_object() getVersion];
+            return ::djinni::String::toCpp(objcpp_result_);
+        }
+    }
+};
+
+}  // namespace djinni_generated
+
+namespace djinni_generated {
+
 auto ApplicationCore::toCpp(ObjcType objc) -> CppType
 {
     if (!objc) {
         return nullptr;
     }
-    return objc->_cppRefHandle.get();
+    if ([(id)objc isKindOfClass:[NTVCoreApplicationCoreCppProxy class]]) {
+        return ((NTVCoreApplicationCoreCppProxy*)objc)->_cppRefHandle.get();
+    }
+    return ::djinni::get_objc_proxy<ObjcProxy>(objc);
 }
 
 auto ApplicationCore::fromCppOpt(const CppOptType& cpp) -> ObjcType
@@ -68,7 +107,10 @@ auto ApplicationCore::fromCppOpt(const CppOptType& cpp) -> ObjcType
     if (!cpp) {
         return nil;
     }
-    return ::djinni::get_cpp_proxy<::NTVCoreApplicationCore>(cpp);
+    if (auto cppPtr = dynamic_cast<ObjcProxy*>(cpp.get())) {
+        return cppPtr->djinni_private_get_proxied_objc_object();
+    }
+    return ::djinni::get_cpp_proxy<::NTVCoreApplicationCoreCppProxy>(cpp);
 }
 
 }  // namespace djinni_generated
