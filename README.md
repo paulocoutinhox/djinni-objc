@@ -12,4 +12,4 @@ make
 
 # What to test
 
-The param `--objc-strict-protocols` to see if `NTVCoreApplicationCore.h` will inherit from NSObject or not.
+The param `--objc-strict-protocols` to see if `NTVCoreApplicationCore.h` will inherit from `NSObject` or not.
